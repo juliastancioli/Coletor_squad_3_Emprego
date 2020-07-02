@@ -85,4 +85,4 @@ if __name__ == '__main__':
 	'''
 
 	# Coleta info de uma hashtag
-	MargemDeTempoHashtag.ColetaHashtag(loader)
+	Tempo_Hashtag.ColetaHashtag(loader)
