@@ -1,5 +1,7 @@
 #>>> pip install instaloader
-import instaloader
+import instaloader, time, datetime
+import MargemDeTempoHashtag
+from datetime import date
 
 if __name__ == '__main__':
 
@@ -83,14 +85,4 @@ if __name__ == '__main__':
 	'''
 
 	# Coleta info de uma hashtag
-	'''
-	tag = "--nome_da_hashtag--"
-	hashtag = instaloader.Hashtag.from_name(loader.context, tag)
-	tag_id = hashtag.hashtagid
-	print('Hashtag: #' + str(hashtag.name) + '  --  ID: ' + str(tag_id))
-	print('Posts count: ' + str(hashtag.mediacount))
-	print('\n')
-	#Faz download dos posts associados com a hashtag
-	for post in hashtag.get_posts():
-		loader.download_post(post, target="#"+hashtag.name)
-	'''
+	MargemDeTempoHashtag.ColetaHashtag(loader)
