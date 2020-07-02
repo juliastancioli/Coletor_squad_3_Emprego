@@ -1,6 +1,6 @@
 #>>> pip install instaloader
 import instaloader, time, datetime
-import MargemDeTempoHashtag
+import Tempo_Hashtag
 from datetime import date
 
 if __name__ == '__main__':
