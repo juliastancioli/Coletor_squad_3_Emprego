@@ -2,10 +2,10 @@ import instaloader, time, datetime, csv
 from datetime import date
 
 def ColetaHashtag (loader):
-		# Coleta info de uma hashtag
+		# Coleta info de uma hashtag baseado em uma margem de tempo escolhida pelo usuario
 	
 		tag = str(input("Digite a palavra que deve ser buscada: ")) #Faz a coleta de qual hashtag deve ser buscada
-		cont_max = int(input("Quantos posts devem ser buscados: "))
+		cont_max = int(input("Quantos posts devem ser buscados: ")) #Coleta o número máximo de posts que devem ser buscados
 		a,m,d = input("Digite uma data para ser o inicio da pesquisa(aaaa-mm-dd): ").split("-")
 		data_ini = datetime.datetime(int(a),int(m),int(d))
 		a,m,d = input("Digite uma data para ser o fim da pesquisa(aaaa-mm-dd): ").split("-")
@@ -17,16 +17,16 @@ def ColetaHashtag (loader):
 		print('\n')
 		#Faz download dos posts associados com a hashtag
 		cont = 0
+		filtered_posts = filter(lambda p: data_fin <= p.date <= data_ini, hashtag.get_posts()) #Filtra os posts na margem de tempo
 		with open(tag+'.csv', 'w', encoding='utf-8', newline='') as file:
 			writer = csv.writer(file)
 			writer.writerow(["Usuario", "Data", "Likes", "Comentarios", "Texto", "Hashtags", "Patrocinado"])
-			for post in hashtag.get_posts():
-				if (post.date <= data_ini) and (post.date >= data_fin): #Verifica se o post está na margem de tempo desejada
-					print(post.date)
-					loader.download_post(post, target="#"+hashtag.name) #Faz o download dos itens do post
-					writer.writerow([post.owner_username, post.date, post.likes, post.comments, post.caption, post.caption_hashtags, post.is_sponsored]) #Coleta os dados referentes as colunas do arquivo csv
-					cont += 1
-				if cont == cont_max:
+			for post in filtered_posts:
+				print(post.date)
+				loader.download_post(post, target="#"+hashtag.name) #Faz o download dos itens do post
+				writer.writerow([post.owner_username, post.date, post.likes, post.comments, post.caption, post.caption_hashtags, post.is_sponsored]) #Coleta os dados referentes as colunas do arquivo csv
+				cont += 1
+				if cont == cont_max or post.date < data_fin: #Caso o número necessário de posts seja coletado ou não exista mais posts nessa margem de tempo, finaliza o programa
 					print("Finalizado!!")
 					break
 				
