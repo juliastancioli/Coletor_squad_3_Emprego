@@ -1,4 +1,4 @@
-import instaloader, time, datetime 
+import instaloader, time, datetime, csv
 from datetime import date
 
 def ColetaHashtag (loader):
@@ -15,9 +15,13 @@ def ColetaHashtag (loader):
 		print('Posts count: ' + str(hashtag.mediacount))
 		print('\n')
 		#Faz download dos posts associados com a hashtag
-		for post in hashtag.get_posts():
-			if (post.date <= data_ini) and (post.date >= data_fin): #Verifica se o post está na margem de tempo desejada
-				print(post.date)
+		with open(tag+'.csv', 'w', newline='') as file:
+			writer = csv.writer(file)
+			writer.writerow(["Likes", "Comentários", ""])
+			for post in hashtag.get_posts():
+				if (post.date <= data_ini) and (post.date >= data_fin): #Verifica se o post está na margem de tempo desejada
+					print(post.date)
+					writer.writerow([post.likes, post.comments, post])
 				#loader.download_post(post, target="#"+hashtag.name) #Faz o download dos itens do post
 			#elif post.date  < data_fin: #Caso não haja mais posts neste mês finaliza
 				#print("finalizado" + teste) 
