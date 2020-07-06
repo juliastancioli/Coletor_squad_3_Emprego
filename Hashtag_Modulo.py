@@ -1,32 +1,22 @@
-import instaloader, time, datetime, csv
+import instaloader, time, datetime, csv, re
 from datetime import date
 
 # função que cria a data :)
 def criar_data(periodo):
     a,m,d = input("Digite uma data para ser o"+periodo+"da pesquisa(aaaa-mm-dd): ").split("-")
-    return datetime.datetime(int(a),int(m),int(d))
-
-
-def list_words(comentario):
-    lista = []
-    for i in range(len(comentario)):
-        str = ""
-        if comentario[i] != ' ':
-            str = str+comentario[i]
-        elif str != '':
-            lista.append(str)
-            str = ''   
-    return lista     
+    return datetime.datetime(int(a),int(m),int(d))   
 
 
 
 # função que avalia se o coronavirus está relacionado ao post
 def post_relacionado(comments, caption):
-    corona_list = ['corona', 'coronavirus', 'coronavírus', 'covid', 'covid19', 'coronga', 'virus', 'vírus', 'doença']
+    corona_list = ['corona', 'coronavirus', 'coronavírus', 'covid', 'covid19', 'coronga', 'vírus', 'doença']
 
     for comment in comments:
-        words_list = list_words(comment.text)
-        
+        word_list = re.sub("[^\w]", " ",  comment.text).split()
+        #words_list = list_words(comment.text)
+        #print(comment.text)
+        print(word_list)
 
 
 
@@ -61,8 +51,9 @@ def coleta_hashtag (loader):
 			print(post.date)
 			writer.writerow([post.owner_username, post.date, post.likes, post.comments, post.caption, post.caption_hashtags, post.is_sponsored, post.tagged_users]) #Coleta os dados referentes as colunas do arquivo csv
 			cont += 1
-			#if post_relacionado(post.get_comments, post.caption):
-				#loader.download_post(post, target="#"+hashtag.name) #Faz o download dos itens do post
+			comentarios = post.get_comments()
+			if post_relacionado(comentarios, post.caption):
+				loader.download_post(post, target="#"+hashtag.name) #Faz o download dos itens do post
 			if cont == cont_max or post.date < data_fin: #Caso o número necessário de posts seja coletado ou não exista mais posts nessa margem de tempo, finaliza o programa
 				print("Finalizado!!")
 				break
