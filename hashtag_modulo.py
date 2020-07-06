@@ -26,7 +26,7 @@ def post_relacionado(comments, caption):
 
     for comment in comments:
         words_list = list_words(comment.text)
-        print(words_list)
+        
 
 
 

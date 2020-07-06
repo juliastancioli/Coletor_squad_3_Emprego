@@ -1,5 +1,5 @@
 import instaloader, time, datetime, csv
-import hashtag_modulo
+import Hashtag_Modulo
 from datetime import date
 
 if __name__ == '__main__':
@@ -10,5 +10,5 @@ if __name__ == '__main__':
     loader.interactive_login(user_login)
     #---------------------------- 
 
-    hashtag_modulo.coleta_hashtag(loader) #função de coleta da tag
+    Hashtag_Modulo.coleta_hashtag(loader) #função de coleta da tag
 
