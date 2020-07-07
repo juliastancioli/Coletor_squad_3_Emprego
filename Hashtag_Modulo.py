@@ -41,6 +41,27 @@ def coleta_hashtag (loader):
 	if cont_max == 0:
 		cont_max = hashtag.mediacount
 
+	#filtra os emojis
+	emoji_pattern = re.compile("["
+        u"\U0001F600-\U0001F64F"  # emoticons
+        u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+        u"\U0001F680-\U0001F6FF"  # transport & map symbols
+        u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+        u"\U00002702-\U000027B0"
+        u"\U00002702-\U000027B0"
+        u"\U000024C2-\U0001F251"
+        u"\U0001f926-\U0001f937"
+        u"\U00010000-\U0010ffff"
+        u"\u2640-\u2642" 
+        u"\u2600-\u2B55"
+        u"\u200d"
+        u"\u23cf"
+        u"\u23e9"
+        u"\u231a"
+        u"\ufe0f"  # dingbats
+        u"\u3030"
+                           "]+", flags=re.UNICODE)
+
 	#Faz download dos posts associados com a hashtag
 	cont = 0
 	filtered_posts = filter(lambda p: data_fin <= p.date <= data_ini, hashtag.get_posts()) #Filtra os posts na margem de tempo
@@ -49,11 +70,11 @@ def coleta_hashtag (loader):
 		writer.writerow(["Usuario", "Data", "Likes", "Comentarios", "Texto", "Hashtags", "Patrocinado", "Usuarios marcados"])
 		for post in filtered_posts:
 			print(post.date)
-			writer.writerow([post.owner_username, post.date, post.likes, post.comments, post.caption, post.caption_hashtags, post.is_sponsored, post.tagged_users]) #Coleta os dados referentes as colunas do arquivo csv
+			writer.writerow([post.owner_username, post.date, post.likes, post.comments,emoji_pattern.sub(r'', post.caption), post.caption_hashtags, post.is_sponsored, post.tagged_users]) #Coleta os dados referentes as colunas do arquivo csv
 			cont += 1
 			comentarios = post.get_comments()
-			if post_relacionado(comentarios, post.caption):
-				loader.download_post(post, target="#"+hashtag.name) #Faz o download dos itens do post
+			#if post_relacionado(comentarios, post.caption):
+				#loader.download_post(post, target="#"+hashtag.name) #Faz o download dos itens do post
 			if cont == cont_max or post.date < data_fin: #Caso o número necessário de posts seja coletado ou não exista mais posts nessa margem de tempo, finaliza o programa
 				print("Finalizado!!")
 				break
