@@ -69,10 +69,11 @@ def coleta_hashtag (loader):
 		writer = csv.writer(file)
 		writer.writerow(["Usuario", "Data", "Likes", "Comentarios", "Texto", "Hashtags", "Patrocinado", "Usuarios marcados"])
 		for post in filtered_posts:
-			print(post.date)
-			writer.writerow([post.owner_username, post.date, post.likes, post.comments,emoji_pattern.sub(r'', post.caption), post.caption_hashtags, post.is_sponsored, post.tagged_users]) #Coleta os dados referentes as colunas do arquivo csv
-			cont += 1
-			comentarios = post.get_comments()
+			if post.is_video == False and post.caption != None:
+				print(post.date)
+				writer.writerow([post.owner_username, post.date, post.likes, post.comments,emoji_pattern.sub(r'', post.caption), post.caption_hashtags, post.is_sponsored, post.tagged_users]) #Coleta os dados referentes as colunas do arquivo csv
+				cont += 1
+			#comentarios = post.get_comments()
 			#if post_relacionado(comentarios, post.caption):
 				#loader.download_post(post, target="#"+hashtag.name) #Faz o download dos itens do post
 			if cont == cont_max or post.date < data_fin: #Caso o número necessário de posts seja coletado ou não exista mais posts nessa margem de tempo, finaliza o programa
