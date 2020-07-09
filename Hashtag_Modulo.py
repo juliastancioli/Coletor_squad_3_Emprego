@@ -1,22 +1,49 @@
 import instaloader, time, datetime, csv, re
 from datetime import date
 
+def kmp(t, p):
+	"""return all matching positions of p in t"""
+	next = [0]
+	j = 0
+	for i in range(1, len(p)):
+		while j > 0 and p[j] != p[i]:
+			j = next[j - 1]
+		if p[j] == p[i]:
+			j += 1
+		next.append(j)
+	# the search part and build part is almost identical.
+	ans = []
+	j = 0
+	for i in range(len(t)):
+		while j > 0 and t[i] != p[j]:
+			j = next[j - 1]
+		if t[i] == p[j]:
+			j += 1
+		if j == len(p):
+			ans.append(i - (j - 1))
+			j = next[j - 1]
+	return ans
+
+
+
 # função que cria a data :)
 def criar_data(periodo):
-    a,m,d = input("Digite uma data para ser o"+periodo+"da pesquisa(aaaa-mm-dd): ").split("-")
-    return datetime.datetime(int(a),int(m),int(d))   
+	a,m,d = input("Digite uma data para ser o"+periodo+"da pesquisa(aaaa-mm-dd): ").split("-")
+	return datetime.datetime(int(a),int(m),int(d))   
 
 
 
 # função que avalia se o coronavirus está relacionado ao post
 def post_relacionado(comments, caption):
-    corona_list = ['corona', 'coronavirus', 'coronavírus', 'covid', 'covid19', 'coronga', 'vírus', 'doença']
+	corona_list = ["covid", "corona", "doença", "quarentena", "coronga", "virus", "pandemia"]
 
-    for comment in comments:
-        word_list = re.sub("[^\w]", " ",  comment.text).split()
-        #words_list = list_words(comment.text)
-        #print(comment.text)
-        print(word_list)
+	for comment in comments:
+		for x in corona_list:
+			string = comment.text.replace(" ", "")
+			if kmp(string,x) != []:
+				return 1
+
+	return 0
 
 
 
@@ -27,11 +54,11 @@ def coleta_hashtag (loader):
 	tag = str(input("Digite a palavra que deve ser buscada: ")) #Faz a coleta de qual hashtag deve ser buscada
 	cont_max = int(input("Quantos posts devem ser buscados (caso 0 será feita a coleta total no periodo de tempo): ")) #Coleta o número máximo de posts que devem ser buscados
 
-    # definição do periodo de tempo:
+	# definição do periodo de tempo:
 	data_ini = criar_data(' inicio ')
 	data_fin = criar_data(' final ')
 
-    #criação e informações da hashtag:
+	#criação e informações da hashtag:
 	hashtag = instaloader.Hashtag.from_name(loader.context, tag)
 	tag_id = hashtag.hashtagid
 	print('Hashtag: #' + str(hashtag.name) + '  --  ID: ' + str(tag_id))
@@ -43,39 +70,41 @@ def coleta_hashtag (loader):
 
 	#filtra os emojis
 	emoji_pattern = re.compile("["
-        u"\U0001F600-\U0001F64F"  # emoticons
-        u"\U0001F300-\U0001F5FF"  # symbols & pictographs
-        u"\U0001F680-\U0001F6FF"  # transport & map symbols
-        u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
-        u"\U00002702-\U000027B0"
-        u"\U00002702-\U000027B0"
-        u"\U000024C2-\U0001F251"
-        u"\U0001f926-\U0001f937"
-        u"\U00010000-\U0010ffff"
-        u"\u2640-\u2642" 
-        u"\u2600-\u2B55"
-        u"\u200d"
-        u"\u23cf"
-        u"\u23e9"
-        u"\u231a"
-        u"\ufe0f"  # dingbats
-        u"\u3030"
-                           "]+", flags=re.UNICODE)
+		u"\U0001F600-\U0001F64F"  # emoticons
+		u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+		u"\U0001F680-\U0001F6FF"  # transport & map symbols
+		u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+		u"\U00002702-\U000027B0"
+		u"\U00002702-\U000027B0"
+		u"\U000024C2-\U0001F251"
+		u"\U0001f926-\U0001f937"
+		u"\U00010000-\U0010ffff"
+		u"\u2640-\u2642" 
+		u"\u2600-\u2B55"
+		u"\u200d"
+		u"\u23cf"
+		u"\u23e9"
+		u"\u231a"
+		u"\ufe0f"  # dingbats
+		u"\u3030"
+							"]+", flags=re.UNICODE)
 
 	#Faz download dos posts associados com a hashtag
 	cont = 0
 	filtered_posts = filter(lambda p: data_fin <= p.date <= data_ini, hashtag.get_posts()) #Filtra os posts na margem de tempo
 	with open(tag+'.csv', 'w', encoding='utf-8', newline='') as file:
 		writer = csv.writer(file)
-		writer.writerow(["Usuario", "Data", "Likes", "Comentarios", "Texto", "Hashtags", "Patrocinado", "Usuarios marcados"])
+		writer.writerow(["Usuario", "Data", "Likes", "Comentarios", "Texto", "Hashtags", "Patrocinado", "Usuarios marcados", "Rel. corona"])
 		for post in filtered_posts:
 			if post.is_video == False and post.caption != None:
 				print(post.date)
-				writer.writerow([post.owner_username, post.date, post.likes, post.comments,emoji_pattern.sub(r'', post.caption), post.caption_hashtags, post.is_sponsored, post.tagged_users]) #Coleta os dados referentes as colunas do arquivo csv
 				cont += 1
-			#comentarios = post.get_comments()
-			#if post_relacionado(comentarios, post.caption):
-				#loader.download_post(post, target="#"+hashtag.name) #Faz o download dos itens do post
+				comentarios = post.get_comments()
+				if post_relacionado(comentarios, post.caption) == 1:
+					writer.writerow([post.owner_username, post.date, post.likes, post.comments,emoji_pattern.sub(r'', post.caption), post.caption_hashtags, post.is_sponsored, post.tagged_users, "True"]) #Coleta os dados referentes as colunas do arquivo csv
+				else:
+					writer.writerow([post.owner_username, post.date, post.likes, post.comments,emoji_pattern.sub(r'', post.caption), post.caption_hashtags, post.is_sponsored, post.tagged_users, "False"]) #Coleta os dados referentes as colunas do arquivo csv
 			if cont == cont_max or post.date < data_fin: #Caso o número necessário de posts seja coletado ou não exista mais posts nessa margem de tempo, finaliza o programa
 				print("Finalizado!!")
 				break
+	
