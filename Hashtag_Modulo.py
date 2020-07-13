@@ -1,5 +1,5 @@
 import instaloader, time, datetime, csv, re
-from datetime import date
+import datetime 
 
 def kmp(t, p):
 	"""return all matching positions of p in t"""
@@ -34,17 +34,22 @@ def criar_data(periodo):
 
 
 # função que avalia se o coronavirus está relacionado ao post
-def post_relacionado(comments, caption):
-	corona_list = ["covid", "corona", "doença", "quarentena", "coronga", "virus", "pandemia"]
-
+def comentario_relacionado(comments):
+	corona_list = ["coron", "covid", "quarentena", "homeoffice", "pandemia"]
 	for comment in comments:
 		for x in corona_list:
 			string = comment.text.replace(" ", "")
 			if kmp(string,x) != []:
-				return 1
+				return True
+	return False
 
-	return 0
-
+def texto_relacionado(caption):
+	corona_list = ["covid", "corona", "doença", "quarentena", "coronga", "virus", "pandemia"]
+	for x in corona_list:
+		string = caption.replace(" ", "")
+		if kmp(string,x) != []:
+			return True
+	return False
 
 
 #função principal do módulo
@@ -94,16 +99,13 @@ def coleta_hashtag (loader):
 	filtered_posts = filter(lambda p: data_fin <= p.date <= data_ini, hashtag.get_posts()) #Filtra os posts na margem de tempo
 	with open(tag+'.csv', 'w', encoding='utf-8', newline='') as file:
 		writer = csv.writer(file)
-		writer.writerow(["Usuario", "Data", "Likes", "Comentarios", "Texto", "Hashtags", "Patrocinado", "Usuarios marcados", "Rel. corona"])
+		writer.writerow(["Usuario", "Data", "Likes", "Comentarios", "Texto", "Hashtags", "Patrocinado", "Usuarios marcados", "Comentário Rel.", "Texto Rel."])
 		for post in filtered_posts:
 			if post.is_video == False and post.caption != None:
 				print(post.date)
 				cont += 1
 				comentarios = post.get_comments()
-				if post_relacionado(comentarios, post.caption) == 1:
-					writer.writerow([post.owner_username, post.date, post.likes, post.comments,emoji_pattern.sub(r'', post.caption), post.caption_hashtags, post.is_sponsored, post.tagged_users, "True"]) #Coleta os dados referentes as colunas do arquivo csv
-				else:
-					writer.writerow([post.owner_username, post.date, post.likes, post.comments,emoji_pattern.sub(r'', post.caption), post.caption_hashtags, post.is_sponsored, post.tagged_users, "False"]) #Coleta os dados referentes as colunas do arquivo csv
+				writer.writerow([post.owner_username, post.date, post.likes, post.comments,emoji_pattern.sub(r'', post.caption), post.caption_hashtags, post.is_sponsored, post.tagged_users, comentario_relacionado(comentarios), texto_relacionado(post.caption)]) #Coleta os dados referentes as colunas do arquivo csv
 			if cont == cont_max or post.date < data_fin: #Caso o número necessário de posts seja coletado ou não exista mais posts nessa margem de tempo, finaliza o programa
 				print("Finalizado!!")
 				break
