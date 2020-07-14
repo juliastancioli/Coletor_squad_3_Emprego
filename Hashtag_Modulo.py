@@ -113,8 +113,3 @@ def coleta_hashtag(loader):
 			if cont == cont_max or post.date < data_fin: #Caso o número necessário de posts seja coletado ou não exista mais posts nessa margem de tempo, finaliza o programa
 				print("Finalizado!!")
 				break
-	
-	with open("business_names"+'.csv', 'a', encoding='utf-8', newline='') as arq:
-		for x in business_accounts:
-			bus = csv.writer(arq)
-			bus.writerow(x)
