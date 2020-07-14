@@ -53,7 +53,7 @@ def texto_relacionado(caption):
 
 
 #função principal do módulo
-def coleta_hashtag (loader):
+def coleta_hashtag(loader):
 	# Coleta info de uma hashtag baseado em uma margem de tempo escolhida pelo usuario
 	
 	tag = str(input("Digite a palavra que deve ser buscada: ")) #Faz a coleta de qual hashtag deve ser buscada
@@ -94,7 +94,7 @@ def coleta_hashtag (loader):
 		u"\u3030"
 							"]+", flags=re.UNICODE)
 
-	#Faz download dos posts associados com a hashtag
+	#Cria os arquivos csv
 	cont = 0
 	filtered_posts = filter(lambda p: data_fin <= p.date <= data_ini, hashtag.get_posts()) #Filtra os posts na margem de tempo
 	with open(tag+'.csv', 'w', encoding='utf-8', newline='') as file:
@@ -107,9 +107,14 @@ def coleta_hashtag (loader):
 				comentarios = post.get_comments()
 				writer.writerow([post.owner_username, post.date, post.likes, post.comments,emoji_pattern.sub(r'', post.caption), post.caption_hashtags, post.is_sponsored, post.tagged_users, comentario_relacionado(comentarios), texto_relacionado(post.caption)]) #Coleta os dados referentes as colunas do arquivo csv
 				if post.owner_profile.business_category_name != None: 
-					with open("business_names"+'.csv', 'w', encoding='utf-8', newline='') as file:
-						writer.writerow([post.owner_username])
+					with open("business_names"+'.csv', 'a', encoding='utf-8', newline='') as arq:
+						bus = csv.writer(arq)
+						bus.writerow([post.owner_username])
 			if cont == cont_max or post.date < data_fin: #Caso o número necessário de posts seja coletado ou não exista mais posts nessa margem de tempo, finaliza o programa
 				print("Finalizado!!")
 				break
 	
+	with open("business_names"+'.csv', 'a', encoding='utf-8', newline='') as arq:
+		for x in business_accounts:
+			bus = csv.writer(arq)
+			bus.writerow(x)
