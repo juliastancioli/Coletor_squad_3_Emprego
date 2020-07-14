@@ -106,6 +106,9 @@ def coleta_hashtag (loader):
 				cont += 1
 				comentarios = post.get_comments()
 				writer.writerow([post.owner_username, post.date, post.likes, post.comments,emoji_pattern.sub(r'', post.caption), post.caption_hashtags, post.is_sponsored, post.tagged_users, comentario_relacionado(comentarios), texto_relacionado(post.caption)]) #Coleta os dados referentes as colunas do arquivo csv
+				if post.owner_profile.business_category_name != None: 
+					with open("business_names"+'.csv', 'w', encoding='utf-8', newline='') as file:
+						writer.writerow([post.owner_username])
 			if cont == cont_max or post.date < data_fin: #Caso o número necessário de posts seja coletado ou não exista mais posts nessa margem de tempo, finaliza o programa
 				print("Finalizado!!")
 				break
