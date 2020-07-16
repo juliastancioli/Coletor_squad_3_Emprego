@@ -1,5 +1,4 @@
 import instaloader, time, datetime, csv, re
-import datetime 
 
 def kmp(t, p):
 	"""return all matching positions of p in t"""
@@ -102,7 +101,7 @@ def coleta_hashtag(loader):
 		writer.writerow(["Usuario", "Data", "Likes", "Comentarios", "Texto", "Hashtags", "Patrocinado", "Usuarios marcados", "Comentário Rel.", "Texto Rel."])
 		for post in filtered_posts:
 			if post.is_video == False and post.caption != None:
-				print(post.date, end=" ")
+				print(post.date)
 				cont += 1
 				comentarios = post.get_comments()
 				writer.writerow([post.owner_username, post.date, post.likes, post.comments,emoji_pattern.sub(r'', post.caption), post.caption_hashtags, post.is_sponsored, post.tagged_users, comentario_relacionado(comentarios), texto_relacionado(post.caption)]) #Coleta os dados referentes as colunas do arquivo csv
