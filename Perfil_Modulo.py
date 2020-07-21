@@ -82,7 +82,7 @@ def coleta_perfil(loader):
         u"\u3030"
                             "]+", flags=re.UNICODE)
 
-    business_csv = str(input("Digite o arquivo de csvs que deve ser lido: ")) #decide o arquivo csv a ser lido
+    business_csv = str(input("Digite o nome do arquivo CSV que deve ser lido: ")) #decide o arquivo csv a ser lido
     cont = 0
     cont_max = 14
 
@@ -93,13 +93,13 @@ def coleta_perfil(loader):
             profile = instaloader.Profile.from_username(loader.context, username)
 
             posts = profile.get_posts()
-            with open(str(profile.userid)+'.csv', 'w', encoding='utf-8', newline='') as file:
+            with open(str(profile.username)+'.csv', 'w', encoding='utf-8', newline='') as file:
                 writer = csv.writer(file)
                 writer.writerow(["Usuario", "Data", "Likes", "Comentarios", "Texto", "Hashtags", "Patrocinado", "Usuarios marcados", "Comentário Rel.", "Texto Rel."])
                 for post in posts:
                     comentarios = post.get_comments()
                     if post.is_video == False and post.caption != None and emprego_relacionado(comentarios, post.caption):
-                        print(post.date, end=" ")
+                        print(post.date)
                         cont += 1
                         print(cont, end=" ")
                         writer.writerow([post.owner_username, post.date, post.likes, post.comments,emoji_pattern.sub(r'', post.caption), post.caption_hashtags, post.is_sponsored, post.tagged_users, comentario_relacionado(comentarios), texto_relacionado(post.caption)]) #Coleta os dados referentes as colunas do arquivo csv
