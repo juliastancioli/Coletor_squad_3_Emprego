@@ -1,36 +1,10 @@
 import instaloader, time, datetime, csv, re
-
-def kmp(t, p):
-	"""return all matching positions of p in t"""
-	next = [0]
-	j = 0
-	for i in range(1, len(p)):
-		while j > 0 and p[j] != p[i]:
-			j = next[j - 1]
-		if p[j] == p[i]:
-			j += 1
-		next.append(j)
-	# the search part and build part is almost identical.
-	ans = []
-	j = 0
-	for i in range(len(t)):
-		while j > 0 and t[i] != p[j]:
-			j = next[j - 1]
-		if t[i] == p[j]:
-			j += 1
-		if j == len(p):
-			ans.append(i - (j - 1))
-			j = next[j - 1]
-	return ans
-
-
+import Subtarefas_Modulo
 
 # função que cria a data :)
 def criar_data(periodo):
 	a,m,d = input("Digite uma data para ser o"+periodo+"da pesquisa(aaaa-mm-dd): ").split("-")
 	return datetime.datetime(int(a),int(m),int(d))   
-
-
 
 # função que avalia se o coronavirus está relacionado ao post
 def comentario_relacionado(comments):
@@ -38,7 +12,7 @@ def comentario_relacionado(comments):
 	for comment in comments:
 		for x in corona_list:
 			string = comment.text.replace(" ", "")
-			if kmp(string,x) != []:
+			if Subtarefas_Modulo.kmp(string,x) != []:
 				return True
 	return False
 
@@ -46,7 +20,7 @@ def texto_relacionado(caption):
 	corona_list = ["covid", "corona", "doença", "quarentena", "coronga", "virus", "pandemia"]
 	for x in corona_list:
 		string = caption.replace(" ", "")
-		if kmp(string,x) != []:
+		if Subtarefas_Modulo.kmp(string,x) != []:
 			return True
 	return False
 
@@ -98,13 +72,17 @@ def coleta_hashtag(loader):
 	filtered_posts = filter(lambda p: data_fin <= p.date <= data_ini, hashtag.get_posts()) #Filtra os posts na margem de tempo
 	with open(tag+'.csv', 'w', encoding='utf-8', newline='') as file:
 		writer = csv.writer(file)
-		writer.writerow(["Usuario", "Data", "Likes", "Comentarios", "Texto", "Hashtags", "Patrocinado", "Usuarios marcados", "Comentário Rel.", "Texto Rel."])
+		writer.writerow(["Usuario", "Data", "Likes", "Comentarios", "Texto", "Hashtags", "Patrocinado", "Usuarios marcados", "Comentário Rel.", "Texto Rel.", "Estado", "Cidade", "Região"])
 		for post in filtered_posts:
 			if post.is_video == False and post.caption != None:
 				print(post.date)
 				cont += 1
 				comentarios = post.get_comments()
-				writer.writerow([post.owner_username, post.date, post.likes, post.comments,emoji_pattern.sub(r'', post.caption), post.caption_hashtags, post.is_sponsored, post.tagged_users, comentario_relacionado(comentarios), texto_relacionado(post.caption)]) #Coleta os dados referentes as colunas do arquivo csv
+				if post.location == None:
+					writer.writerow([post.owner_username, post.date, post.likes, post.comments,emoji_pattern.sub(r'', post.caption), post.caption_hashtags, post.is_sponsored, post.tagged_users, comentario_relacionado(comentarios), texto_relacionado(post.caption), "None", "None", "None"]) #Coleta os dados referentes as colunas do arquivo csv
+				else:
+					local = Subtarefas_Modulo.localiza(post.location.lat, post.location.lng)
+					writer.writerow([post.owner_username, post.date, post.likes, post.comments,emoji_pattern.sub(r'', post.caption), post.caption_hashtags, post.is_sponsored, post.tagged_users, comentario_relacionado(comentarios), texto_relacionado(post.caption), local[0], local[1], local[2]]) #Coleta os dados referentes as colunas do arquivo csv
 				if post.owner_profile.is_business_account: 
 					with open("business_names"+'_'+tag+'.csv', 'a', encoding='utf-8', newline='') as arq:
 						bus = csv.writer(arq)
