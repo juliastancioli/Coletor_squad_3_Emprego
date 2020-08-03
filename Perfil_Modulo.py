@@ -61,7 +61,7 @@ def coleta_perfil(loader):
 
     business_csv = str(input("Digite o nome do arquivo CSV que deve ser lido: ")) #decide o arquivo csv a ser lido
     cont = 0
-    cont_max = 14
+    cont_max = int(input("Digite o número de posts que devem ser coletados do perfil: "))
 
     with open(business_csv+'.csv', 'r') as arquivo_csv:
         leitor = csv.reader(arquivo_csv, delimiter=',')
@@ -72,7 +72,7 @@ def coleta_perfil(loader):
             posts = profile.get_posts()
             with open(str(profile.username)+'.csv', 'w', encoding='utf-8', newline='') as file:
                 writer = csv.writer(file)
-                writer.writerow(["Usuario", "Data", "Likes", "Comentarios", "Texto", "Hashtags", "Patrocinado", "Usuarios marcados", "Comentário Rel.", "Texto Rel."])
+                writer.writerow(["Usuario", "Data", "Likes", "Comentarios", "Texto", "Hashtags", "Patrocinado", "Usuarios marcados", "Comentário Rel.", "Texto Rel.", "Estado", "Cidade", "Região"])
                 for post in posts:
                     comentarios = post.get_comments()
                     if post.is_video == False and post.caption != None and emprego_relacionado(comentarios, post.caption):
