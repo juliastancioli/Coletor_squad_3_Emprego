@@ -72,17 +72,17 @@ def coleta_hashtag(loader):
 	filtered_posts = filter(lambda p: data_fin <= p.date <= data_ini, hashtag.get_posts()) #Filtra os posts na margem de tempo
 	with open(tag+'.csv', 'w', encoding='utf-8', newline='') as file:
 		writer = csv.writer(file)
-		writer.writerow(["Usuario", "Data", "Likes", "Comentarios", "Texto", "Hashtags", "Patrocinado", "Usuarios marcados", "Comentário Rel.", "Texto Rel.", "Estado", "Cidade", "Região"])
+		writer.writerow(["Usuario", "Data", "Likes", "Comentarios", "Texto", "Hashtags", "Patrocinado", "Usuarios marcados", "Comentário Rel.", "Texto Rel.", "Estado", "Cidade", "Metropolitano", "Região"])
 		for post in filtered_posts:
 			if post.is_video == False and post.caption != None:
 				print(post.date)
 				cont += 1
 				comentarios = post.get_comments()
-				if post.location == None:
-					writer.writerow([post.owner_username, post.date, post.likes, post.comments,emoji_pattern.sub(r'', post.caption), post.caption_hashtags, post.is_sponsored, post.tagged_users, comentario_relacionado(comentarios), texto_relacionado(post.caption), "None", "None", "None"]) #Coleta os dados referentes as colunas do arquivo csv
+				if post.location == None or post.location.lat == None or post.location.lng == None:
+					writer.writerow([post.owner_username, post.date, post.likes, post.comments,emoji_pattern.sub(r'', post.caption), post.caption_hashtags, post.is_sponsored, post.tagged_users, comentario_relacionado(comentarios), texto_relacionado(post.caption), "None", "None", "None", "None"]) #Coleta os dados referentes as colunas do arquivo csv
 				else:
 					local = Subtarefas_Modulo.localiza(post.location.lat, post.location.lng)
-					writer.writerow([post.owner_username, post.date, post.likes, post.comments,emoji_pattern.sub(r'', post.caption), post.caption_hashtags, post.is_sponsored, post.tagged_users, comentario_relacionado(comentarios), texto_relacionado(post.caption), local[0], local[1], local[2]]) #Coleta os dados referentes as colunas do arquivo csv
+					writer.writerow([post.owner_username, post.date, post.likes, post.comments,emoji_pattern.sub(r'', post.caption), post.caption_hashtags, post.is_sponsored, post.tagged_users, comentario_relacionado(comentarios), texto_relacionado(post.caption), local[0], local[1], local[2], local[3]]) #Coleta os dados referentes as colunas do arquivo csv
 				if post.owner_profile.is_business_account: 
 					with open("business_names"+'_'+tag+'.csv', 'a', encoding='utf-8', newline='') as arq:
 						bus = csv.writer(arq)
