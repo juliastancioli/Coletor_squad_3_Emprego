@@ -1,12 +1,12 @@
 import instaloader, time, datetime, csv, re
 import Subtarefas_Modulo
 
-# função que cria a data :)
+# Função que cria a data 
 def criar_data(periodo):
 	a,m,d = input("Digite uma data para ser o"+periodo+"da pesquisa(aaaa-mm-dd): ").split("-")
 	return datetime.datetime(int(a),int(m),int(d))   
 
-# função que avalia se o coronavirus está relacionado ao post
+# Função que avalia se o coronavirus está relacionado ao post
 def comentario_relacionado(comments):
 	corona_list = ["coron", "covid", "quarentena", "homeoffice", "pandemia"]
 	for comment in comments:
@@ -16,6 +16,7 @@ def comentario_relacionado(comments):
 				return True
 	return False
 
+# Função que busca se o texto do post analisado contém alguma das palavras-chaves relacionadas ao covid
 def texto_relacionado(caption):
 	corona_list = ["covid", "corona", "doença", "quarentena", "coronga", "virus", "pandemia"]
 	for x in corona_list:
@@ -25,7 +26,6 @@ def texto_relacionado(caption):
 	return False
 
 
-#função principal do módulo
 def coleta_hashtag(loader):
 	# Coleta info de uma hashtag baseado em uma margem de tempo escolhida pelo usuario
 	

@@ -1,8 +1,8 @@
 import re
 from geopy.geocoders import Nominatim
 
+# Função que faz a busca de uma palavra dentro de uma string
 def kmp(t, p):
-    """return all matching positions of p in t"""
     next = [0]
     j = 0
     for i in range(1, len(p)):
@@ -11,7 +11,6 @@ def kmp(t, p):
         if p[j] == p[i]:
             j += 1
         next.append(j)
-	# the search part and build part is almost identical.
     ans = []
     j = 0
     for i in range(len(t)):
@@ -24,6 +23,7 @@ def kmp(t, p):
             j = next[j - 1]
     return ans
 
+# Função que a partir dos dados de longitude e latitude busca a localização do post caso esteja disponivel
 def localiza(lat, long):
     geolocator = Nominatim(user_agent="CDA UFMG")
     loc = str(lat)+", "+str(long)

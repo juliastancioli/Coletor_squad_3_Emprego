@@ -1,6 +1,7 @@
 import instaloader, time, datetime, csv, re
 import datetime, Subtarefas_Modulo
 
+# Função que busca se os comentários do post analisado contém alguma das palavras-chaves relacionadas ao covid
 def comentario_relacionado(comments):
     corona_list = ["coron", "covid", "quarentena", "homeoffice", "pandemia"]
     for comment in comments:
@@ -10,6 +11,7 @@ def comentario_relacionado(comments):
                 return True
     return False
 
+# Função que busca se o texto do post analisado contém alguma das palavras-chaves relacionadas ao covid
 def texto_relacionado(caption):
     corona_list = ["coron", "covid", "quarentena", "homeoffice", "pandemia"]
     for x in corona_list:
@@ -18,6 +20,7 @@ def texto_relacionado(caption):
             return True
     return False
 
+# Função que filtra se o post coletado tem relacionamento com o tema emprego
 def emprego_relacionado(comments, caption):
     emprego_list = ['empreg', 'demiss', 'demit', 'homeoffice', 'trabalh', 'auxilio', 'auxílio']
     for x in emprego_list:
@@ -30,10 +33,6 @@ def emprego_relacionado(comments, caption):
             if Subtarefas_Modulo.kmp(string,x) != []:
                 return True
     return False
-
-    
-
-    
 
 
 def coleta_perfil(loader):
